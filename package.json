@@ -1,0 +1,24 @@
+{
+  "name": "blessay-entry",
+  "version": "1.0.0",
+  "description": "블로그 엔트리 포인트",
+  "author": "Jake Lee",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "@nuxtjs/axios": "^5.11.0",
+    "nuxt": "^2.0.0"
+  },
+  "devDependencies": {
+    "@babel/runtime-corejs2": "^7.10.2",
+    "blessay-vue": "0.1.4",
+    "core-js": "2",
+    "node-sass": "^4.14.1",
+    "sass-loader": "^8.0.2"
+  }
+}
