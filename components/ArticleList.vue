@@ -8,14 +8,14 @@
               <h3 class="tit">{{item.title}}</h3>
               <p class="desc">{{item.description}}</p>
             </div>
-            <span class="date">
-              {{item.created_on.substring(0,10).replace(/-/gi, '.')}}
-            </span>
+            <span class="date">{{item.created_on.substring(0,10).replace(/-/gi, '.')}}</span>
           </div>
         </a>
         <template v-if="$auth !== undefined">
           <div class="func" :class="{'is-active': item.isActive}">
-            <button @click="onUtil(item)" class="func__opener"><span class="a11y">유틸</span></button>
+            <button @click="onUtil(item)" class="func__opener">
+              <span class="a11y">유틸</span>
+            </button>
             <div v-show="item.isActive" class="func__layer">
               <a :href="`/post/write?id=${item.id}`" class="func__btn">수정하기</a>
               <button class="func__btn" @click="onDelete(item)">삭제하기</button>
@@ -41,10 +41,10 @@ export default {
   data() {
     return {
       articles: this.articlesProp,
-      baseViewPath: this.baseViewPathProp,
-    }
+      baseViewPath: this.baseViewPathProp
+    };
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -55,18 +55,9 @@ a {
   text-align: left;
 }
 
-.blessay {
-  &__list {
-    max-width: 1280px;
-    margin: 0 auto;
-  }
-
-  &__item {
-    display: flex;
-    padding-top: 20px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #f7f7f7;
-  }
+ul {
+  margin: 0;
+  padding: 0;
 }
 
 .notice-recommend {
@@ -74,6 +65,61 @@ a {
     text-align: center;
     font-weight: bolder;
     font-size: 24px;
+  }
+}
+
+.blessay {
+  font-family: "Noto Sans KR", sans-serif;
+
+  &__list {
+    max-width: 630px;
+    margin: 0 auto;
+    padding-left: 6%;
+    padding-right: 6%;
+  }
+  &__item {
+    display: flex;
+    border-bottom: 1px solid #f7f7f7;
+
+    a {
+      padding-top: 20px;
+      padding-bottom: 20px;
+    }
+  }
+  .tit {
+    color: #343a40;
+    font-size: 22px;
+    margin-bottom: 0.5em;
+  }
+  .desc {
+    font-weight: 300;
+  }
+  .date {
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    color: #495057;
+    font-weight: bold;
+  }
+
+  @media (min-width: 500px) {
+    &__list {
+      margin: 0 auto;
+    }
+    &__item {
+      a {
+        padding: 10% 0;
+      }
+    }
+    .tit {
+      font-size: 42px;
+    }
+    .desc {
+      margin-bottom: 0.3em;
+      font-size: 18px;
+    }
+    .date {
+      font-size: 13px;
+    }
   }
 }
 </style>

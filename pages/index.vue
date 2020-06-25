@@ -43,7 +43,7 @@ export default {
   data() {
     return {
       articles: null,
-      baseViewPath: '/essay?id=',
+      baseViewPath: './essay?id=',
     }
   },
   async mounted() {

@@ -2,18 +2,12 @@
   <div class="blessay" data-invert>
     <div class="wrapper">
       <article class="article">
-        <p v-for="block in article.blocks" :key="block.id">
-          <template v-if="block.type === 'paragraph'">
-            <p v-html="block.content"></p>
-          </template>
-          <template v-if="block.type === 'header'">
-            <h1 v-if="block.optional === '1'">{{block.content}}</h1>
-            <h2 v-if="block.optional === '2'">{{block.content}}</h2>
-          </template>
-          <template v-else-if="block.type === 'image'">
-            <img :src="block.content" :alt="block.optional">
-          </template>
-        </p>
+        <template v-for="block in article.blocks">
+          <p v-if="block.type === 'paragraph'" v-html="block.content" :key="block.id"></p>
+          <h1 v-if="block.type === 'header' && block.optional === '1'" :key="block.id">{{block.content}}</h1>
+          <h3 v-if="block.type === 'header' && block.optional === '2'" :key="block.id">{{block.content}}</h3>
+          <img v-else-if="block.type === 'image'" :key="block.id" :src="block.content" :alt="block.optional">
+        </template>
       </article>
     </div>
   </div>
@@ -44,5 +38,58 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.blessay {
 
+  font-family: 'Noto Sans KR', sans-serif;
+  line-height: 1.5;
+
+  @mixin common {
+    width: 90%;
+    max-width: 630px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  h1 {
+    margin-top: 2em;
+    margin-bottom: 1em;
+    font-size: 30px;
+    line-height: 1.3;
+    @include common;
+  }
+
+  h3 {
+    margin-top: 2em;
+    margin-bottom: 1em;
+    font-size: 28px;
+    line-height: 1.3;
+    @include common;
+  }
+
+  p {
+    margin-top: 1em;
+    margin-bottom: 1.3em;
+    font-size: 18px;
+    font-weight: 300;
+    @include common;
+  }
+
+  img {
+    width: 100%;
+  }
+
+  @media (min-width: 500px) {
+    line-height: 1.55;
+
+    h1 {
+      font-size: 46px;
+    }
+    h3 {
+      font-size: 34px;
+    }
+    p {
+      font-size: 20px;
+    }
+  }
+}
 </style>
