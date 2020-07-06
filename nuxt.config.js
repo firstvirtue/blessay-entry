@@ -27,7 +27,9 @@ export default {
   ** Global CSS
   */
   css: [
-    'blessay-vue/dist/blessay-vue.css'
+    'blessay-vue/dist/blessay-vue.css',
+    '~/assets/scss/base/_reset.scss',
+    '~/assets/scss/base/_variables.scss'
   ],
   /*
   ** Plugins to load before mounting the App

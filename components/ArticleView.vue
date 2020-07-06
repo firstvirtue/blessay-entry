@@ -1,15 +1,22 @@
 <template>
   <div class="blessay" data-invert>
-    <div class="wrapper">
-      <article class="article">
-        <template v-for="block in article.blocks">
-          <p v-if="block.type === 'paragraph'" v-html="block.content" :key="block.id"></p>
-          <h1 v-if="block.type === 'header' && block.optional === '1'" :key="block.id">{{block.content}}</h1>
-          <h3 v-if="block.type === 'header' && block.optional === '2'" :key="block.id">{{block.content}}</h3>
-          <img v-else-if="block.type === 'image'" :key="block.id" :src="block.content" :alt="block.optional">
-        </template>
-      </article>
-    </div>
+    <article class="article">
+      <span class="date">{{article.created_on.substring(0,10).replace(/-/gi, '.')}}</span>
+      <template v-for="block in article.blocks">
+        <p v-if="block.type === 'paragraph'" v-html="block.content_data.text" :key="block.id">{{block.content_data.text}}</p>
+        <h1 v-if="block.type === 'header' && block.content_data.level === 1" :key="block.id">{{block.content_data.text}}</h1>
+        <h3 v-if="block.type === 'header' && block.content_data.level === 2" :key="block.id">{{block.content_data.text}}</h3>
+        <figure v-if="block.type === 'image'" :key="block.id" :class="{'is-stretched': block.content_data.stretched}">
+          <img :src="block.content_data.file.url">
+          <figcaption v-if="block.content_data.caption">{{block.content_data.caption}}</figcaption>
+        </figure>
+        <hr v-if="block.type === 'delimiter'" :key="block.id">
+        <blockquote v-if="block.type === 'quote'" :key="block.id">
+          <p v-html="block.content_data.text"></p>
+          <footer v-if="block.content_data.caption">{{block.content_data.caption}}</footer>
+        </blockquote>
+      </template>
+    </article>
   </div>
 </template>
 
@@ -25,23 +32,16 @@ export default {
     }
   },
   async mounted() {
-    console.log(this.articleIdProp)
-    // await this.$axios.get(`/api/posts/read/${this.articleId}`)
-    //   .then(res => {
-    //     console.log(res.data);
-    //     // this.articles = res.data;
-    //     this.article = res.data;
-    //   })
-    //   .catch(err => console.log(err));
   }
 }
 </script>
 
 <style lang="scss" scoped>
 .blessay {
-
   font-family: 'Noto Sans KR', sans-serif;
-  line-height: 1.5;
+  line-height: 1.6;
+  word-break: keep-all;
+  word-wrap: break-word;
 
   @mixin common {
     width: 90%;
@@ -50,45 +50,127 @@ export default {
     margin-right: auto;
   }
 
+  .date {
+    display: block;
+    margin-top: 5rem;
+    color: #868e96;
+    font-family: 'Myriad', sans-serif;
+    font-size: 20px;
+    font-weight: bold;
+    @include common;
+
+    & + h1 {
+      margin-top: 0.5em;
+    }
+  }
+
   h1 {
     margin-top: 2em;
     margin-bottom: 1em;
     font-size: 30px;
     line-height: 1.3;
+    font-weight: bold;
     @include common;
   }
 
   h3 {
     margin-top: 2em;
     margin-bottom: 1em;
-    font-size: 28px;
+    font-size: 22px;
     line-height: 1.3;
+    font-weight: bold;
     @include common;
   }
 
   p {
     margin-top: 1em;
     margin-bottom: 1.3em;
-    font-size: 18px;
-    font-weight: 300;
+    font-size: 1.8rem;
     @include common;
   }
 
-  img {
+  figure {
+    @include common;
+    display: block;
     width: 100%;
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+
+    &.is-stretched {
+      max-width: none;
+
+      figcaption {
+        @include common;
+      }
+    }
+
+    img {
+      width: 100%;
+    }
+
+    figcaption {
+      margin-top: 0.4rem;
+      text-align: center;
+    }
+  }
+
+  blockquote {
+    @include common;
+    margin-top: 2em;
+    margin-bottom: 5rem;
+    width: 90%;
+
+    p {
+      margin: 0;
+      width: 100%;
+      color: 868e96;
+      font-family: 'iropke', serif;
+      font-size: 1.8rem;
+    }
+
+    footer {
+      margin-top: 1em;
+      color: #868e96;
+      font-size: 1.6rem;
+      text-align: center;
+    }
+  }
+
+  hr {
+    @include common;
+    width: 35%;
+    margin: 4rem auto 3.4rem;
+    border: none;
+    background-color: #e6e6e6;
   }
 
   @media (min-width: 500px) {
     line-height: 1.55;
 
     h1 {
-      font-size: 46px;
+      font-size: 4.6rem;
     }
     h3 {
-      font-size: 34px;
+      font-size: 2.8rem;
     }
     p {
-      font-size: 20px;
+      font-size: 2.0rem;
+    }
+    figure {
+      &.is-stretched {
+        margin-top: 6rem;
+        margin-bottom: 5.2rem;
+      }
+    }
+    hr {
+      margin: 6rem auto;
+      width: 25%;
+      max-width: 220px;
+    }
+    blockquote {
+      p {
+        font-size: 2.6rem;
+      }
     }
   }
 }

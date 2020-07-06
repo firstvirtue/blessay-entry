@@ -6,11 +6,12 @@
           <div class="cont">
             <div class="cont__wrapper">
               <h3 class="tit">{{item.title}}</h3>
-              <p class="desc">{{item.description}}</p>
+              <p class="desc" v-html="item.description"></p>
             </div>
             <span class="date">{{item.created_on.substring(0,10).replace(/-/gi, '.')}}</span>
           </div>
         </a>
+
         <template v-if="$auth !== undefined">
           <div class="func" :class="{'is-active': item.isActive}">
             <button @click="onUtil(item)" class="func__opener">
@@ -36,13 +37,23 @@
 export default {
   props: {
     articlesProp: Array,
-    baseViewPathProp: String
+    baseViewPathProp: String,
+    onUtilCallback: Function,
+    onDeleteCallback: Function
   },
   data() {
     return {
       articles: this.articlesProp,
       baseViewPath: this.baseViewPathProp
     };
+  },
+  methods: {
+    onUtil(item) {
+      this.onUtilCallback && this.onUtilCallback(item);
+    },
+    onDelete(item) {
+      this.onDeleteCallback && this.onDeleteCallback(item);
+    }
   }
 };
 </script>
@@ -62,52 +73,100 @@ ul {
 
 .notice-recommend {
   a {
+    display: block;
+    // color: $gray3;
+    color: #b3b3b3;
+    font-size: 32px;
+    padding: 20rem 0;
     text-align: center;
-    font-weight: bolder;
-    font-size: 24px;
+    align-self: center;
+    word-break: keep-all;
+    word-wrap: break-word;
   }
 }
 
 .blessay {
   font-family: "Noto Sans KR", sans-serif;
+  word-break: keep-all;
+  word-wrap: break-word;
 
   &__list {
-    max-width: 630px;
+    max-width: 700px;
     margin: 0 auto;
     padding-left: 6%;
     padding-right: 6%;
   }
   &__item {
-    display: flex;
-    border-bottom: 1px solid #f7f7f7;
+    position: relative;
+    border-bottom: 1px solid #e6e6e6;
+    padding-right: 2em;
 
     a {
+      display: block;
       padding-top: 20px;
       padding-bottom: 20px;
     }
   }
+  .func {
+    position: relative;
+
+    &__opener {
+      // color: $gray6;
+      color: #666666;
+      font-size: 13px;
+      // @include icon(arrow) {
+      //   transform: rotateZ(90deg);
+      //   transition: transform 0.2s;
+      // }
+    }
+
+    &__btn {
+      padding: 0.35em 0;
+      // color: $gray6;
+      color: #666666;
+      font-size: 15px;
+    }
+
+    &__layer {
+      position: absolute;
+      right: 0;
+      top: 3rem;
+      border: 1px solid #e6e6e6;
+      border-radius: 5px;
+      padding: 1rem 2rem;
+      background-color: #ffffff;
+    }
+  }
   .tit {
-    color: #343a40;
-    font-size: 22px;
     margin-bottom: 0.5em;
+    color: #343a40;
+    font-size: 24px;
+    font-weight: bold;
   }
   .desc {
-    font-weight: 300;
+    margin: 0;
   }
   .date {
     font-size: 13px;
     letter-spacing: 0.05em;
-    color: #495057;
+    color: #868e96;
     font-weight: bold;
+  }
+  .func {
+    position: absolute;
+    top: 20px;
+    right: 10px;
   }
 
   @media (min-width: 500px) {
     &__list {
       margin: 0 auto;
+      padding-left: 4rem;
+      padding-right: 4rem;
     }
     &__item {
       a {
-        padding: 10% 0;
+        padding: 50px 0;
       }
     }
     .tit {
@@ -119,6 +178,9 @@ ul {
     }
     .date {
       font-size: 13px;
+    }
+    .func {
+      top: 60px;
     }
   }
 }
