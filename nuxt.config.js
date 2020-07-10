@@ -16,9 +16,9 @@ export default {
       { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;700&display=swap' }
     ]
   },
-  router: {
-    base: '/blessay-entry/'
-  },
+  // router: {
+  //   base: '/blessay-entry/'
+  // },
   /*
   ** Customize the progress-bar color
   */
@@ -27,7 +27,6 @@ export default {
   ** Global CSS
   */
   css: [
-    'blessay-vue/dist/blessay-vue.css',
     '~/assets/scss/base/_reset.scss',
     '~/assets/scss/base/_variables.scss'
   ],
