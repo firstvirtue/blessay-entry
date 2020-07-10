@@ -20,6 +20,7 @@
     padding-left: 6%;
     padding-right: 6%;
     height: 50px;
+    transition: height 0.4s;
   }
 
   nav {
@@ -42,6 +43,7 @@
     bottom: 0;
     background-color: rgba(#ffffff, 0.7);
     border-bottom: 1px solid #dee2e6;
+    transition: opacity 0.4s;
   }
 
   .home {
@@ -91,6 +93,12 @@
       a {
         font-size: 2rem;
       }
+    }
+  }
+
+  @media (min-width: 1110px) {
+    .bg {
+      opacity: 0;
     }
   }
 </style>

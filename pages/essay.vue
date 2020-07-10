@@ -33,4 +33,10 @@ export default {
     padding-top: 100px;
     padding-bottom: 100px;
   }
+
+  @media (min-width: 500px) {
+  .container {
+    padding-top: 150px;
+  }
+}
 </style>
