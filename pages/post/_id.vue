@@ -48,7 +48,7 @@ export default {
     width: 90%;
   }
 
-  @media (min-width: 500px) {
+  @media (min-width: 540px) {
     .container {
       padding-top: 150px;
     }

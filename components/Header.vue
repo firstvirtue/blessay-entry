@@ -80,7 +80,7 @@
     }
   }
 
-  @media (min-width: 500px) {
+  @media (min-width: 540px) {
     header {
       height: 72px;
     }

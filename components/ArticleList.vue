@@ -5,7 +5,7 @@
         <a :href="`${baseViewPath}${item.id}`">
           <div class="cont">
             <div class="cont__wrapper">
-              <h3 class="tit">{{item.title}}</h3>
+              <h3 class="tit" v-html="item.title"></h3>
               <p class="desc" v-html="item.description"></p>
             </div>
             <span class="date">{{item.created_on.substring(0,10).replace(/-/gi, '.')}}</span>
@@ -145,6 +145,7 @@ ul {
   }
   .desc {
     margin: 0;
+    color: #495057;
   }
   .date {
     font-size: 13px;
@@ -158,7 +159,7 @@ ul {
     right: 10px;
   }
 
-  @media (min-width: 500px) {
+  @media (min-width: 540px) {
     &__list {
       margin: 0 auto;
       padding-left: 4rem;
