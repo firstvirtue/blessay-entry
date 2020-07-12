@@ -101,6 +101,10 @@ ul {
     border-bottom: 1px solid #e6e6e6;
     padding-right: 2em;
 
+    &:last-child {
+      border-bottom: none;
+    }
+
     a {
       display: block;
       padding-top: 20px;
