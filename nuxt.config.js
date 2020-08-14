@@ -16,9 +16,9 @@ export default {
       { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;700&display=swap' }
     ]
   },
-  // router: {
-  //   base: '/blessay-entry/'
-  // },
+  router: {
+    base: '/blessay-entry/'
+  },
   /*
   ** Customize the progress-bar color
   */
@@ -51,9 +51,10 @@ export default {
   ** axios settings
   */
   axios: {
-    baseURL: process.env.BASE_URL || 'http://141.164.39.129:4000',
+    baseURL: 'https://hsrch.co.kr:4001',
     proxyHeaders: false,
-    credentials: false
+    credentials: false,
+    proxy: true
   },
   /*
   ** Build configuration
@@ -65,9 +66,9 @@ export default {
     extend (config, ctx) {
     }
   },
-  generate: {
-    routes: [
-      '/post/17'
-    ]
-  }
+  // generate: {
+  //   routes: [
+  //     '/post/17'
+  //   ]
+  // }
 }
