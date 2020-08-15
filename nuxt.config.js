@@ -54,7 +54,7 @@ export default {
     baseURL: 'https://hsrch.co.kr:4001',
     proxyHeaders: false,
     credentials: false,
-    proxy: true
+    // proxy: true
   },
   /*
   ** Build configuration

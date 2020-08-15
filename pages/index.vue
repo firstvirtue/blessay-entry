@@ -16,7 +16,7 @@ export default {
   data() {
     return {
       articles: null,
-      baseViewPath: './post/',
+      baseViewPath: './essay?id=',
     }
   },
   async mounted() {
