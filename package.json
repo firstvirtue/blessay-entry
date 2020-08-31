@@ -5,7 +5,7 @@
   "author": "Jake Lee",
   "private": true,
   "scripts": {
-    "dev": "nuxt",
+    "dev": "cross-env HOST=0.0.0.0 PORT=3000 nuxt --open",
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate",
@@ -19,6 +19,7 @@
     "@babel/runtime-corejs2": "^7.10.2",
     "blessay-vue": "0.1.4",
     "core-js": "2",
+    "cross-env": "^7.0.2",
     "gh-pages": "^3.0.0",
     "node-sass": "^4.14.1",
     "sass-loader": "^8.0.2"
