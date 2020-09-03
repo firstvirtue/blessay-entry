@@ -1,9 +1,15 @@
 <template>
   <div class="tag-wrapper">
     <div class="tag-container">
-      <div class="tag-input" contenteditable="true" @focus="handleFocusTagInput" @blur="handleBlurTagInput" @keydown="handleKeyDownTagInput">
-        <span v-for="item in current" :key="item.id">
+      <div class="tag-input">
+        <span v-for="item in currentTags" :key="item.id" class="tag">
           {{item.name}}
+        </span>
+
+        <span class="tag tag--current" contenteditable="true"
+          @focus="handleFocusTagInput"
+          @blur="handleBlurTagInput"
+          @keydown="handleKeyDownTagInput">
         </span>
       </div>
       <div class="tag-popup" v-show="isPopup">
@@ -22,7 +28,7 @@ export default {
   data() {
     return {
       isPopup: false,
-      current: [
+      currentTags: [
 
       ],
       tags: [
@@ -33,17 +39,34 @@ export default {
   },
   methods: {
     handleKeyDownTagInput(e) {
-      console.log(e);
+      // console.log(e);
+      switch (e.keyCode) {
+        case 13:
+          e.preventDefault();
+          console.log('enter', e.target.innerText)
+          // [TODO] 태그 비교 삽입
+          break;
+        case 8:
+          if(e.target.innerText.length) {
+            // [TODO] 마지막 태그 제거
+          }
+          console.log('remove', e.target.innerText.length);
+          break;
+
+        default:
+          break;
+      }
     },
     handleFocusTagInput() {
       this.isPopup = true;
+
     },
     handleBlurTagInput() {
       // this.isPopup = false;
     },
 
     handleTagItem(item) {
-      this.current.push(item);
+      this.currentTags.push(item);
     }
   }
 }
@@ -70,7 +93,12 @@ export default {
     }
 
     & {
+      background-color: magenta;
+    }
 
+    &--current {
+      min-width: 100px;
+      display: inline-block;
     }
   }
 </style>
