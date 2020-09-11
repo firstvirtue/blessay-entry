@@ -1,20 +1,20 @@
 <template>
   <div class="tag-wrapper">
     <div class="tag-container">
-      <div class="tag-input">
+      <div class="tag-input" @click="handleClickTagContainer">
         <span v-for="item in currentTags" :key="item.id" class="tag">
           {{item.name}}
         </span>
 
-        <span class="tag tag--current" contenteditable="true"
+        <input class="tag tag--current" ref="tagInput" autocomplete="off"
           @focus="handleFocusTagInput"
+          @click="handleClickTagInput"
           @blur="handleBlurTagInput"
-          @keydown="handleKeyDownTagInput">
-        </span>
+          @keydown="handleKeyDownTagInput" />
       </div>
       <div class="tag-popup" v-show="isPopup">
         <ul class="tag-list">
-          <li class="tag-item" v-for="item in tags" :key="item.id" @click="handleTagItem(item)">
+          <li class="tag-item" v-for="item in tags" :key="item.id" @click="handleTagItem($event, item)">
             <span class="tag">{{item.name}}</span>
           </li>
         </ul>
@@ -25,6 +25,11 @@
 
 <script>
 export default {
+  mounted() {
+    window.addEventListener('click', () => {
+      this.isPopup = false;
+    });
+  },
   data() {
     return {
       isPopup: false,
@@ -37,6 +42,11 @@ export default {
       ]
     }
   },
+  watch: {
+    isPopup: function() {
+      console.log(this.isPopup);
+    }
+  },
   methods: {
     handleKeyDownTagInput(e) {
       // console.log(e);
@@ -47,26 +57,36 @@ export default {
           // [TODO] 태그 비교 삽입
           break;
         case 8:
-          if(e.target.innerText.length) {
+          if(e.target.value.length === 0) {
             // [TODO] 마지막 태그 제거
           }
-          console.log('remove', e.target.innerText.length);
+          console.log('remove', e.target.value.length);
           break;
 
         default:
           break;
       }
     },
-    handleFocusTagInput() {
+    handleFocusTagInput(e) {
+      console.log(e);
       this.isPopup = true;
-
+    },
+    handleClickTagInput(e) {
+      e.stopPropagation();
     },
     handleBlurTagInput() {
       // this.isPopup = false;
     },
 
-    handleTagItem(item) {
+    handleTagItem(e, item) {
+      e.stopPropagation();
       this.currentTags.push(item);
+      this.$refs.tagInput.focus();
+    },
+    handleClickTagContainer(e) {
+      e.stopPropagation();
+      this.isPopup = true;
+      this.$refs.tagInput.focus();
     }
   }
 }
