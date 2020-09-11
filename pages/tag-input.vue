@@ -53,8 +53,19 @@ export default {
       switch (e.keyCode) {
         case 13:
           e.preventDefault();
-          console.log('enter', e.target.innerText)
-          // [TODO] 태그 비교 삽입
+          const inputValue = e.target.value;
+          console.log('enter', inputValue)
+          // [TODO] 태그 삽입
+          if(inputValue.length > 0) {
+            const item = {
+              id: this.tags.length + 1,
+              name: inputValue
+            };
+            this.tags.push(item);
+            this.currentTags.push(item);
+            this.$refs.tagInput.value = '';
+          }
+          // [TODO] 태그 비교 체크
           break;
         case 8:
           if(e.target.value.length === 0) {
