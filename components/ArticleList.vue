@@ -89,6 +89,7 @@ ul {
   font-family: "Noto Sans KR", sans-serif;
   word-break: keep-all;
   word-wrap: break-word;
+  // font-weight: 300;
 
   &__list {
     max-width: 700px;

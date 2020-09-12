@@ -1,9 +1,11 @@
 <template>
-  <div class="tag-wrapper">
-    <div class="tag-container">
+  <div class="wrapper">
+
+    <div class="tag-container" :class="{'is-popup': isPopup}">
       <div class="tag-input" @click="handleClickTagContainer">
         <span v-for="item in currentTags" :key="item.id" class="tag">
           {{item.name}}
+          <span class="close-btn" @click="handleRemoveTag(item)">x</span>
         </span>
 
         <input class="tag tag--current" ref="tagInput" autocomplete="off"
@@ -20,6 +22,7 @@
         </ul>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -48,6 +51,12 @@ export default {
     }
   },
   methods: {
+    handleRemoveTag(item) {
+      const index = this.currentTags.indexOf(item);
+      if(index > -1) {
+        this.currentTags.splice(index, 1);
+      }
+    },
     handleKeyDownTagInput(e) {
       // console.log(e);
       switch (e.keyCode) {
@@ -104,8 +113,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .tag-wrapper {
-    max-width: 1280px;
+  .wrapper {
+    max-width: 1080px;
     margin: 0 auto;
     padding-top: 20rem;
   }
@@ -127,9 +136,22 @@ export default {
       background-color: magenta;
     }
 
+    .close-btn {
+      display: none;
+      cursor: pointer;
+    }
+
     &--current {
       min-width: 100px;
       display: inline-block;
+    }
+  }
+
+  .is-popup {
+    .tag {
+      .close-btn {
+        display: inline-block;
+      }
     }
   }
 </style>

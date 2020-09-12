@@ -46,6 +46,7 @@ export default {
   line-height: 1.6;
   word-break: keep-all;
   word-wrap: break-word;
+  // font-weight: 300;
 
   @mixin common {
     width: 90%;
