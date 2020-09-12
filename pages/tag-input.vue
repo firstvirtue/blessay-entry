@@ -61,18 +61,18 @@ export default {
           // console.log('enter', inputValue)
           // [TODO] 태그 삽입
           if(inputValue.length > 0) {
-            const item = {
-              id: this.tags.length + 1,
+            let item = this.tags.find(el => el.name === inputValue)
+            ?? {
+              id: this.tags.length + 11,
               name: inputValue
             };
 
-            // this.currentTags.push(item);
             this.handleAddCurrentTagItem(item, null, () => {
               this.$refs.tagInput.value = '';
             });
             this.handleAddTagItem(item);
           }
-          // [TODO] 태그 비교 체크
+
           break;
         case 8:
           if(e.target.value.length === 0) {
@@ -80,7 +80,7 @@ export default {
               this.currentTags.pop();
             }
           }
-          console.log('remove', e.target.value.length);
+          // console.log('remove', e.target.value.length);
           break;
 
         default:
