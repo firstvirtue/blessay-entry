@@ -79,6 +79,9 @@ export default {
         case 8:
           if(e.target.value.length === 0) {
             // [TODO] 마지막 태그 제거
+            if(this.currentTags.length > 0) {
+              this.currentTags.pop();
+            }
           }
           console.log('remove', e.target.value.length);
           break;
