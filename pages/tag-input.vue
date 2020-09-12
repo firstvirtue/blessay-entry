@@ -3,8 +3,8 @@
 
     <div class="tag-container" :class="{'is-popup': isPopup}">
       <div class="tag-input" @click="handleClickTagContainer">
-        <span v-for="item in currentTags" :key="item.id" class="tag">
-          {{item.name}}
+        <span v-for="item in currentTags" :key="item.uid" class="tag">
+          {{item.value}}
           <span class="close-btn" @click="handleRemoveTag(item)">x</span>
         </span>
 
@@ -16,8 +16,8 @@
       </div>
       <div class="tag-popup" v-show="isPopup">
         <ul class="tag-list">
-          <li class="tag-item" v-for="item in tags" :key="item.id" @click="handleAddCurrentTagItem(item, $event)">
-            <span class="tag">{{item.name}}</span>
+          <li class="tag-item" v-for="item in tags" :key="item.uid" @click="handleAddCurrentTagItem(item, $event)">
+            <span class="tag">{{item.value}}</span>
           </li>
         </ul>
       </div>
@@ -40,8 +40,8 @@ export default {
 
       ],
       tags: [
-        { id: 1, name: '객체' },
-        { id: 2, name: '함수' }
+        { uid: 1, value: '객체', group: 'jake' },
+        { uid: 2, value: '함수', group: 'jake' }
       ]
     }
   },
@@ -61,10 +61,10 @@ export default {
           // console.log('enter', inputValue)
           // [TODO] 태그 삽입
           if(inputValue.length > 0) {
-            let item = this.tags.find(el => el.name === inputValue)
+            let item = this.tags.find(el => el.value === inputValue)
             ?? {
-              id: this.tags.length + 11,
-              name: inputValue
+              uid: new Date().toString(),
+              value: inputValue
             };
 
             this.handleAddCurrentTagItem(item, null, () => {
@@ -99,7 +99,7 @@ export default {
     },
     handleAddCurrentTagItem(tag, event, callback) {
       event && event.stopPropagation();
-      if(this.currentTags.some(item => item.name === tag.name)) return;
+      if(this.currentTags.some(item => item.value === tag.value)) return;
 
       this.currentTags.push(tag);
       this.$refs.tagInput.focus();
@@ -107,7 +107,7 @@ export default {
     },
     handleAddTagItem(tag) {
 
-      if(this.tags.some(item => item.name === tag.name)) return;
+      if(this.tags.some(item => item.value === tag.value)) return;
       // [TODO] API
       this.tags.push(tag);
     },
