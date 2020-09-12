@@ -16,7 +16,7 @@
       </div>
       <div class="tag-popup" v-show="isPopup">
         <ul class="tag-list">
-          <li class="tag-item" v-for="item in tags" :key="item.id" @click="handleTagItem($event, item)">
+          <li class="tag-item" v-for="item in tags" :key="item.id" @click="handleAddCurrentTagItem(item, $event)">
             <span class="tag">{{item.name}}</span>
           </li>
         </ul>
@@ -45,11 +45,6 @@ export default {
       ]
     }
   },
-  watch: {
-    isPopup: function() {
-      console.log(this.isPopup);
-    }
-  },
   methods: {
     handleRemoveTag(item) {
       const index = this.currentTags.indexOf(item);
@@ -63,22 +58,24 @@ export default {
         case 13:
           e.preventDefault();
           const inputValue = e.target.value;
-          console.log('enter', inputValue)
+          // console.log('enter', inputValue)
           // [TODO] 태그 삽입
           if(inputValue.length > 0) {
             const item = {
               id: this.tags.length + 1,
               name: inputValue
             };
-            this.tags.push(item);
-            this.currentTags.push(item);
-            this.$refs.tagInput.value = '';
+
+            // this.currentTags.push(item);
+            this.handleAddCurrentTagItem(item, null, () => {
+              this.$refs.tagInput.value = '';
+            });
+            this.handleAddTagItem(item);
           }
           // [TODO] 태그 비교 체크
           break;
         case 8:
           if(e.target.value.length === 0) {
-            // [TODO] 마지막 태그 제거
             if(this.currentTags.length > 0) {
               this.currentTags.pop();
             }
@@ -91,7 +88,7 @@ export default {
       }
     },
     handleFocusTagInput(e) {
-      console.log(e);
+      // console.log(e);
       this.isPopup = true;
     },
     handleClickTagInput(e) {
@@ -100,11 +97,19 @@ export default {
     handleBlurTagInput() {
       // this.isPopup = false;
     },
+    handleAddCurrentTagItem(tag, event, callback) {
+      event && event.stopPropagation();
+      if(this.currentTags.some(item => item.name === tag.name)) return;
 
-    handleTagItem(e, item) {
-      e.stopPropagation();
-      this.currentTags.push(item);
+      this.currentTags.push(tag);
       this.$refs.tagInput.focus();
+      callback && callback();
+    },
+    handleAddTagItem(tag) {
+
+      if(this.tags.some(item => item.name === tag.name)) return;
+      // [TODO] API
+      this.tags.push(tag);
     },
     handleClickTagContainer(e) {
       e.stopPropagation();
