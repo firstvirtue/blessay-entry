@@ -52,6 +52,7 @@ export default {
   */
   axios: {
     baseURL: 'https://hsrch.co.kr:4001',
+    // baseURL: 'http://localhost:4000',
     proxyHeaders: false,
     credentials: false,
     // proxy: true

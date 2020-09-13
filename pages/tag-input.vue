@@ -3,8 +3,8 @@
 
     <div class="tag-container" :class="{'is-popup': isPopup}">
       <div class="tag-input" @click="handleClickTagContainer">
-        <span v-for="item in currentTags" :key="item.uid" class="tag">
-          {{item.value}}
+        <span v-for="item in currentTags" :key="item.id" class="tag">
+          {{item.tagname}}
           <span class="close-btn" @click="handleRemoveTag(item)">x</span>
         </span>
 
@@ -16,8 +16,8 @@
       </div>
       <div class="tag-popup" v-show="isPopup">
         <ul class="tag-list">
-          <li class="tag-item" v-for="item in tags" :key="item.uid" @click="handleAddCurrentTagItem(item, $event)">
-            <span class="tag">{{item.value}}</span>
+          <li class="tag-item" v-for="item in tags" :key="item.id" @click="handleAddCurrentTagItem(item, $event)">
+            <span class="tag">{{item.tagname}}</span>
           </li>
         </ul>
       </div>
@@ -28,10 +28,18 @@
 
 <script>
 export default {
-  mounted() {
+  async mounted() {
     window.addEventListener('click', () => {
       this.isPopup = false;
     });
+
+    const domain = 'jakel.ee';
+    await this.$axios.get(`/api/tags?domain=${domain}`)
+      .then(res => {
+        // this.articles = res.data;
+        this.tags = res.data;
+      })
+      .catch(err => console.log(err));
   },
   data() {
     return {
@@ -40,8 +48,8 @@ export default {
 
       ],
       tags: [
-        { uid: 1, value: '객체', group: 'jake' },
-        { uid: 2, value: '함수', group: 'jake' }
+        // { id: 1, value: '객체', group: 'jake' },
+        // { id: 2, value: '함수', group: 'jake' }
       ]
     }
   },
@@ -61,16 +69,16 @@ export default {
           // console.log('enter', inputValue)
           // [TODO] 태그 삽입
           if(inputValue.length > 0) {
-            let item = this.tags.find(el => el.value === inputValue)
+            let item = this.tags.find(el => el.tagname === inputValue)
             ?? {
-              uid: new Date().toString(),
-              value: inputValue
+              tagname: inputValue,
+              domain: 'jakel.ee'
             };
 
-            this.handleAddCurrentTagItem(item, null, () => {
+            this.handleAddTagItem(item, () => {
               this.$refs.tagInput.value = '';
+              this.handleAddCurrentTagItem(item);
             });
-            this.handleAddTagItem(item);
           }
 
           break;
@@ -97,19 +105,24 @@ export default {
     handleBlurTagInput() {
       // this.isPopup = false;
     },
-    handleAddCurrentTagItem(tag, event, callback) {
+    handleAddCurrentTagItem(tag, event) {
       event && event.stopPropagation();
-      if(this.currentTags.some(item => item.value === tag.value)) return;
+      if(this.currentTags.some(item => item.tagname === tag.tagname)) return;
 
       this.currentTags.push(tag);
       this.$refs.tagInput.focus();
-      callback && callback();
     },
-    handleAddTagItem(tag) {
+    async handleAddTagItem(tag, callback) {
 
-      if(this.tags.some(item => item.value === tag.value)) return;
-      // [TODO] API
-      this.tags.push(tag);
+      if(this.tags.some(item => item.tagname === tag.tagname)) return;
+      // [TODO] update API
+      await this.$axios.post(`/api/tags`, tag)
+      .then(res => {
+        // this.articles = res.data;
+        this.tags.push(tag);
+        callback && callback();
+      })
+      .catch(err => console.log(err));
     },
     handleClickTagContainer(e) {
       e.stopPropagation();
