@@ -17,15 +17,14 @@
       <div class="tag-popup" v-show="isPopup">
         <ul class="tag-list">
           <li class="tag-item" v-for="item in tags" :key="item.id" @click="handleAddCurrentTagItem(item, $event)">
-            <!-- <div class="tag tag--stored"> -->
-              <span class="tag-name">{{item.tagname}}</span>
-              <div class="tag-func">
-                <button class="tag-func-opener" @click="handleSwitchTagFunc(item, $event)">...</button>
-                <ul class="tag-func-list" :class="{'is-open': item.isOpen}">
-                  <li><button class="tag-func-trigger" @click="handleRemoveStoredTag(item, $event)">삭제</button></li>
-                </ul>
-              </div>
-            <!-- </div> -->
+            <span class="tag-name">{{item.tagname}}</span>
+            <div class="tag-func">
+              <button class="tag-func-opener" @click="handleSwitchTagFunc(item, $event)">...</button>
+              <div class="preventer" :class="{'is-open': item.isOpen}" role="presentation"></div>
+              <ul class="tag-func-list" :class="{'is-open': item.isOpen}">
+                <li><button class="tag-func-trigger" @click="handleRemoveStoredTag(item, $event)">삭제</button></li>
+              </ul>
+            </div>
           </li>
         </ul>
       </div>
@@ -81,12 +80,13 @@ export default {
             let item = this.tags.find(el => el.tagname === inputValue)
             ?? {
               tagname: inputValue,
-              domain: 'jakel.ee'
+              domain: 'jakel.ee',
+              isOpen: false,
             };
 
-            this.handleAddTagItem(item, () => {
+            this.handleAddTagItem(item, (newTag) => {
               this.$refs.tagInput.value = '';
-              this.handleAddCurrentTagItem(item);
+              this.handleAddCurrentTagItem(newTag);
             });
           }
 
@@ -133,9 +133,11 @@ export default {
       // [TODO] update API
       await this.$axios.post(`/api/tags`, tag)
       .then(res => {
-        // this.articles = res.data;
-        this.tags.push(tag);
-        callback && callback();
+        const newTag = res.data;
+        newTag.isOpen = false;
+
+        this.tags.push(newTag);
+        callback && callback(newTag);
       })
       .catch(err => console.log(err));
     },
@@ -152,6 +154,7 @@ export default {
       if(check) {
         await this.$axios.delete(`/api/tags/${tag.id}`)
         .then(res => {
+          console.log(tag);
           const index = this.tags.indexOf(tag);
           if(index > -1) {
             this.tags.splice(index, 1);
@@ -180,7 +183,7 @@ export default {
           tag.isOpen = false;
         }
       });
-      console.log(flag);
+      // console.log(flag);
       return flag;
     }
   }
@@ -226,6 +229,10 @@ export default {
       display: flex;
       justify-content: space-between;
       cursor: pointer;
+
+      &:hover {
+        background-color: blue;
+      }
     }
 
     &-func {
@@ -237,6 +244,21 @@ export default {
         top: 1.2em;
         width: 4em;
         background-color: #ffffff;
+        z-index: 101;
+
+        &.is-open {
+          display: block;
+        }
+      }
+
+      .preventer {
+        display: none;
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        top: 0;
+        left: 0;
+        z-index: 100;
 
         &.is-open {
           display: block;
