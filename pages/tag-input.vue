@@ -47,7 +47,6 @@ export default {
     const domain = 'jakel.ee';
     await this.$axios.get(`/api/tags?domain=${domain}`)
       .then(res => {
-        // this.articles = res.data;
         this.tags = res.data.map(x => {
           x.isOpen = false;
           x.isActive = false;
@@ -86,34 +85,24 @@ export default {
       }
     },
     handleKeyDownTagInput(e) {
-      // console.log(e);
+
       switch (e.keyCode) {
         case 13:
           e.preventDefault();
           const inputValue = e.target.value;
-          // console.log('enter', inputValue)
-          // [TODO] 태그 삽입
-          // if(inputValue.length > 0) {
-            // let item = this.tags.find(el => el.tagname === inputValue)
-            // ?? {
-            //   tagname: inputValue,
-            //   domain: 'jakel.ee',
-            //   isOpen: false,
-            //   isActive: false,
-            // };
 
-            let item = this.activeTag ?? {
-              tagname: inputValue,
-              domain: 'jakel.ee',
-              isOpen: false,
-              isActive: false,
-            };
+          let item = this.activeTag ?? {
+            tagname: inputValue,
+            domain: 'jakel.ee',
+            isOpen: false,
+            isActive: false,
+            isNew: true,
+          };
 
-            this.handleAddTagItem(item, (newTag) => {
-              this.$refs.tagInput.value = '';
-              this.handleAddCurrentTagItem(newTag);
-            });
-          // }
+          this.handleAddTagItem(item, (newTag) => {
+            this.$refs.tagInput.value = '';
+            this.handleAddCurrentTagItem(newTag);
+          });
 
           break;
         case 8:
@@ -122,31 +111,28 @@ export default {
               this.currentTags.pop();
             }
           }
-          // console.log('remove', e.target.value.length);
+
           break;
-        // case 38:
-        //   e.preventDefault();
-        //   if(this.activeTag) {
-        //     const idx = this.filteredTags.indexOf(this.activeTag);
-        //     // this.activeTag.isActive = false;
-        //     this.activeTag = this.filteredTags[idx - 1 < 0 ? this.filteredTags.length - 1 : idx - 1];
-        //   } else {
-        //     this.activeTag = this.filteredTags[this.filteredTags.length - 1];
-        //   }
-        //   // this.activeTag.isActive = true;
-        //   break;
-        // case 40:
-        //   e.preventDefault();
-        //   if(this.activeTag) {
-        //     const idx = this.filteredTags.indexOf(this.activeTag);
-        //     // this.activeTag.isActive = false;
-        //     this.activeTag = this.filteredTags[idx + 1 > this.filteredTags.length - 1 ? 0 : idx + 1];
-        //   } else {
-        //     this.activeTag = this.filteredTags[0];
-        //   }
-        //   // this.activeTag.isActive = true;
-        //   break;
+        case 38:
+          e.preventDefault();
+          if(this.activeTag) {
+            const idx = this.filteredTags.indexOf(this.activeTag);
+            this.activeTag = this.filteredTags[idx - 1 < 0 ? this.filteredTags.length - 1 : idx - 1];
+          } else {
+            this.activeTag = this.filteredTags[this.filteredTags.length - 1];
+          }
+          break;
+        case 40:
+          e.preventDefault();
+          if(this.activeTag) {
+            const idx = this.filteredTags.indexOf(this.activeTag);
+            this.activeTag = this.filteredTags[idx + 1 > this.filteredTags.length - 1 ? 0 : idx + 1];
+          } else {
+            this.activeTag = this.filteredTags[0];
+          }
+          break;
         default:
+          this.activeTag = null;
           break;
       }
     },
@@ -157,7 +143,7 @@ export default {
         const filtered = this.tags.filter(x => x.tagname.match(filter));
         this.filteredTags = filtered;
 
-        if(filter.length > 0) {
+        if(filter.length > 0 && this.filteredTags.filter(x => x.tagname.match(filter)).length === 0) {
           const newTag = {
             tagname: filter,
             domain: 'jakel.ee',
@@ -168,33 +154,6 @@ export default {
 
           this.filteredTags.push(newTag);
         }
-      }
-
-      switch (e.keyCode) {
-        case 38:
-          e.preventDefault();
-          if(this.activeTag) {
-            const idx = this.filteredTags.indexOf(this.activeTag);
-            // this.activeTag.isActive = false;
-            this.activeTag = this.filteredTags[idx - 1 < 0 ? this.filteredTags.length - 1 : idx - 1];
-          } else {
-            this.activeTag = this.filteredTags[this.filteredTags.length - 1];
-          }
-          // this.activeTag.isActive = true;
-          break;
-        case 40:
-          e.preventDefault();
-          if(this.activeTag) {
-            const idx = this.filteredTags.indexOf(this.activeTag);
-            // this.activeTag.isActive = false;
-            this.activeTag = this.filteredTags[idx + 1 > this.filteredTags.length - 1 ? 0 : idx + 1];
-          } else {
-            this.activeTag = this.filteredTags[0];
-          }
-          // this.activeTag.isActive = true;
-          break;
-        default:
-          break;
       }
     },
     handleFocusTagInput(e) {
@@ -218,31 +177,30 @@ export default {
       this.$refs.tagInput.focus();
     },
     handleEnterMouse(tag) {
-      // tag.isActive = true;
       this.activeTag = tag;
     },
     handleLeaveMouse(tag) {
-      // tag.isActive = false;
-      // this.activeTag = tag;
+      //
+      //
     },
     async handleAddTagItem(tag, callback) {
 
-      if(this.filteredTags.some(item => item.tagname === tag.tagname)) {
+      if(tag.isNew) {
+        // [TODO] update API
+        await this.$axios.post(`/api/tags`, tag)
+        .then(res => {
+          const newTag = res.data;
+          newTag.isOpen = false;
+          newTag.isActive = false;
+
+          this.tags.push(newTag);
+          this.activeTag = null;
+          callback && callback(newTag);
+        })
+        .catch(err => console.log(err));
+      } else {
         callback && callback(tag);
-        return;
       }
-
-      // [TODO] update API
-      await this.$axios.post(`/api/tags`, tag)
-      .then(res => {
-        const newTag = res.data;
-        newTag.isOpen = false;
-        newTag.isActive = false;
-
-        this.tags.push(newTag);
-        callback && callback(newTag);
-      })
-      .catch(err => console.log(err));
     },
     handleClickTagContainer(e) {
       e.stopPropagation();
@@ -286,7 +244,7 @@ export default {
           tag.isOpen = false;
         }
       });
-      // console.log(flag);
+
       return flag;
     }
   }
