@@ -12,11 +12,12 @@
           @focus="handleFocusTagInput"
           @click="handleClickTagInput"
           @blur="handleBlurTagInput"
-          @keydown="handleKeyDownTagInput" />
+          @keydown="handleKeyDownTagInput"
+          @keyup="handleKeyUpTagInput" />
       </div>
       <div class="tag-popup" v-show="isPopup">
         <ul class="tag-list">
-          <li class="tag-item" v-for="item in tags" :key="item.id" @click="handleAddCurrentTagItem(item, $event)">
+          <li class="tag-item" v-for="item in filteredTags" :key="item.id" @click="handleAddCurrentTagItem(item, $event)">
             <span class="tag-name">{{item.tagname}}</span>
             <div class="tag-func">
               <button class="tag-func-opener" @click="handleSwitchTagFunc(item, $event)">...</button>
@@ -45,6 +46,7 @@ export default {
       .then(res => {
         // this.articles = res.data;
         this.tags = res.data.map(x => {x.isOpen = false; return x; });
+        this.filteredTags = this.tags;
       })
       .catch(err => console.log(err));
   },
@@ -52,13 +54,9 @@ export default {
     return {
       isModal: false,
       isPopup: false,
-      currentTags: [
-
-      ],
-      tags: [
-        // { id: 1, value: '객체', group: 'jake' },
-        // { id: 2, value: '함수', group: 'jake' }
-      ]
+      currentTags: [],
+      tags: [],
+      filteredTags: [],
     }
   },
   methods: {
@@ -104,6 +102,11 @@ export default {
           break;
       }
     },
+    handleKeyUpTagInput(e) {
+      const filter = e ? e.target.value : '';
+      const filtered = this.tags.filter(x => x.tagname.match(filter));
+      this.filteredTags = filtered;
+    },
     handleFocusTagInput(e) {
       // console.log(e);
       this.isPopup = true;
@@ -125,8 +128,8 @@ export default {
     },
     async handleAddTagItem(tag, callback) {
 
-      if(this.tags.some(item => item.tagname === tag.tagname)) {
-        callback && callback();
+      if(this.filteredTags.some(item => item.tagname === tag.tagname)) {
+        callback && callback(tag);
         return;
       }
 
@@ -136,7 +139,7 @@ export default {
         const newTag = res.data;
         newTag.isOpen = false;
 
-        this.tags.push(newTag);
+        this.filteredTags.push(newTag);
         callback && callback(newTag);
       })
       .catch(err => console.log(err));
@@ -155,9 +158,9 @@ export default {
         await this.$axios.delete(`/api/tags/${tag.id}`)
         .then(res => {
           console.log(tag);
-          const index = this.tags.indexOf(tag);
+          const index = this.filteredTags.indexOf(tag);
           if(index > -1) {
-            this.tags.splice(index, 1);
+            this.filteredTags.splice(index, 1);
           }
 
           const indexCurrent = this.currentTags.indexOf(tag);
@@ -177,7 +180,7 @@ export default {
     },
     handleCheckAndHideTagFunc() {
       let flag;
-      this.tags.forEach(tag => {
+      this.filteredTags.forEach(tag => {
         if(tag.isOpen) {
           flag = true;
           tag.isOpen = false;
