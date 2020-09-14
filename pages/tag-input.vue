@@ -59,11 +59,23 @@ export default {
   },
   data() {
     return {
+      activeTag: null,
       isModal: false,
       isPopup: false,
       currentTags: [],
       tags: [],
       filteredTags: [],
+    }
+  },
+  watch: {
+    activeTag: function() {
+      this.filteredTags.forEach(x => x.isActive = false);
+      if(this.activeTag) this.activeTag.isActive = true;
+
+      console.log(this.activeTag);
+    },
+    isPopup: function() {
+      this.activeTag = null;
     }
   },
   methods: {
@@ -81,9 +93,16 @@ export default {
           const inputValue = e.target.value;
           // console.log('enter', inputValue)
           // [TODO] 태그 삽입
-          if(inputValue.length > 0) {
-            let item = this.tags.find(el => el.tagname === inputValue)
-            ?? {
+          // if(inputValue.length > 0) {
+            // let item = this.tags.find(el => el.tagname === inputValue)
+            // ?? {
+            //   tagname: inputValue,
+            //   domain: 'jakel.ee',
+            //   isOpen: false,
+            //   isActive: false,
+            // };
+
+            let item = this.activeTag ?? {
               tagname: inputValue,
               domain: 'jakel.ee',
               isOpen: false,
@@ -94,7 +113,7 @@ export default {
               this.$refs.tagInput.value = '';
               this.handleAddCurrentTagItem(newTag);
             });
-          }
+          // }
 
           break;
         case 8:
@@ -105,15 +124,78 @@ export default {
           }
           // console.log('remove', e.target.value.length);
           break;
-
+        // case 38:
+        //   e.preventDefault();
+        //   if(this.activeTag) {
+        //     const idx = this.filteredTags.indexOf(this.activeTag);
+        //     // this.activeTag.isActive = false;
+        //     this.activeTag = this.filteredTags[idx - 1 < 0 ? this.filteredTags.length - 1 : idx - 1];
+        //   } else {
+        //     this.activeTag = this.filteredTags[this.filteredTags.length - 1];
+        //   }
+        //   // this.activeTag.isActive = true;
+        //   break;
+        // case 40:
+        //   e.preventDefault();
+        //   if(this.activeTag) {
+        //     const idx = this.filteredTags.indexOf(this.activeTag);
+        //     // this.activeTag.isActive = false;
+        //     this.activeTag = this.filteredTags[idx + 1 > this.filteredTags.length - 1 ? 0 : idx + 1];
+        //   } else {
+        //     this.activeTag = this.filteredTags[0];
+        //   }
+        //   // this.activeTag.isActive = true;
+        //   break;
         default:
           break;
       }
     },
     handleKeyUpTagInput(e) {
-      const filter = e ? e.target.value : '';
-      const filtered = this.tags.filter(x => x.tagname.match(filter));
-      this.filteredTags = filtered;
+
+      if(e.keyCode !== 38 && e.keyCode !== 40) {
+        const filter = e.target.value;
+        const filtered = this.tags.filter(x => x.tagname.match(filter));
+        this.filteredTags = filtered;
+
+        if(filter.length > 0) {
+          const newTag = {
+            tagname: filter,
+            domain: 'jakel.ee',
+            isOpen: false,
+            isActive: false,
+            isNew: true,
+          }
+
+          this.filteredTags.push(newTag);
+        }
+      }
+
+      switch (e.keyCode) {
+        case 38:
+          e.preventDefault();
+          if(this.activeTag) {
+            const idx = this.filteredTags.indexOf(this.activeTag);
+            // this.activeTag.isActive = false;
+            this.activeTag = this.filteredTags[idx - 1 < 0 ? this.filteredTags.length - 1 : idx - 1];
+          } else {
+            this.activeTag = this.filteredTags[this.filteredTags.length - 1];
+          }
+          // this.activeTag.isActive = true;
+          break;
+        case 40:
+          e.preventDefault();
+          if(this.activeTag) {
+            const idx = this.filteredTags.indexOf(this.activeTag);
+            // this.activeTag.isActive = false;
+            this.activeTag = this.filteredTags[idx + 1 > this.filteredTags.length - 1 ? 0 : idx + 1];
+          } else {
+            this.activeTag = this.filteredTags[0];
+          }
+          // this.activeTag.isActive = true;
+          break;
+        default:
+          break;
+      }
     },
     handleFocusTagInput(e) {
       // console.log(e);
@@ -136,10 +218,12 @@ export default {
       this.$refs.tagInput.focus();
     },
     handleEnterMouse(tag) {
-      tag.isActive = true;
+      // tag.isActive = true;
+      this.activeTag = tag;
     },
     handleLeaveMouse(tag) {
-      tag.isActive = false;
+      // tag.isActive = false;
+      // this.activeTag = tag;
     },
     async handleAddTagItem(tag, callback) {
 
