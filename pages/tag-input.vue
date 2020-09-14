@@ -116,7 +116,8 @@ export default {
       e.stopPropagation();
     },
     handleBlurTagInput() {
-      // this.isPopup = false;
+      this.$refs.tagInput.value = '';
+      this.filteredTags = this.tags;
     },
     handleAddCurrentTagItem(tag, event) {
       event && event.stopPropagation();
@@ -139,7 +140,7 @@ export default {
         const newTag = res.data;
         newTag.isOpen = false;
 
-        this.filteredTags.push(newTag);
+        this.tags.push(newTag);
         callback && callback(newTag);
       })
       .catch(err => console.log(err));
