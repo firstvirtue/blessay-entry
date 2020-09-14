@@ -3,10 +3,10 @@
 
     <div class="tag-container" :class="{'is-popup': isPopup}">
       <div class="tag-input" @click="handleClickTagContainer">
-        <span v-for="item in currentTags" :key="item.id" class="tag">
+        <div v-for="item in currentTags" :key="item.id" class="tag">
           {{item.tagname}}
           <span class="close-btn" @click="handleRemoveTag(item)">x</span>
-        </span>
+        </div>
 
         <input class="tag tag--current" ref="tagInput" autocomplete="off"
           @focus="handleFocusTagInput"
@@ -17,7 +17,15 @@
       <div class="tag-popup" v-show="isPopup">
         <ul class="tag-list">
           <li class="tag-item" v-for="item in tags" :key="item.id" @click="handleAddCurrentTagItem(item, $event)">
-            <span class="tag">{{item.tagname}}</span>
+            <!-- <div class="tag tag--stored"> -->
+              <span class="tag-name">{{item.tagname}}</span>
+              <div class="tag-func">
+                <button class="tag-func-opener" @click="handleSwitchTagFunc(item, $event)">...</button>
+                <ul class="tag-func-list" :class="{'is-open': item.isOpen}">
+                  <li><button class="tag-func-trigger" @click="handleRemoveStoredTag(item, $event)">삭제</button></li>
+                </ul>
+              </div>
+            <!-- </div> -->
           </li>
         </ul>
       </div>
@@ -37,12 +45,13 @@ export default {
     await this.$axios.get(`/api/tags?domain=${domain}`)
       .then(res => {
         // this.articles = res.data;
-        this.tags = res.data;
+        this.tags = res.data.map(x => {x.isOpen = false; return x; });
       })
       .catch(err => console.log(err));
   },
   data() {
     return {
+      isModal: false,
       isPopup: false,
       currentTags: [
 
@@ -98,6 +107,7 @@ export default {
     handleFocusTagInput(e) {
       // console.log(e);
       this.isPopup = true;
+      this.handleCheckAndHideTagFunc();
     },
     handleClickTagInput(e) {
       e.stopPropagation();
@@ -107,6 +117,7 @@ export default {
     },
     handleAddCurrentTagItem(tag, event) {
       event && event.stopPropagation();
+      if(this.handleCheckAndHideTagFunc()) return;
       if(this.currentTags.some(item => item.tagname === tag.tagname)) return;
 
       this.currentTags.push(tag);
@@ -114,7 +125,11 @@ export default {
     },
     async handleAddTagItem(tag, callback) {
 
-      if(this.tags.some(item => item.tagname === tag.tagname)) return;
+      if(this.tags.some(item => item.tagname === tag.tagname)) {
+        callback && callback();
+        return;
+      }
+
       // [TODO] update API
       await this.$axios.post(`/api/tags`, tag)
       .then(res => {
@@ -128,6 +143,45 @@ export default {
       e.stopPropagation();
       this.isPopup = true;
       this.$refs.tagInput.focus();
+    },
+    async handleRemoveStoredTag(tag, event) {
+      event.stopPropagation();
+
+      const check = window.confirm(`${tag.tagname} 태그를 삭제 하시겠습니까?`);
+
+      if(check) {
+        await this.$axios.delete(`/api/tags/${tag.id}`)
+        .then(res => {
+          const index = this.tags.indexOf(tag);
+          if(index > -1) {
+            this.tags.splice(index, 1);
+          }
+
+          const indexCurrent = this.currentTags.indexOf(tag);
+          if(indexCurrent > -1) {
+            this.currentTags.splice(indexCurrent, 1);
+          }
+
+          // [TODO] Remove all others current tags
+        })
+        .catch(err => console.log(err));
+      }
+    },
+    handleSwitchTagFunc(tag, event) {
+      event.stopPropagation();
+      this.handleCheckAndHideTagFunc();
+      tag.isOpen = !tag.isOpen;
+    },
+    handleCheckAndHideTagFunc() {
+      let flag;
+      this.tags.forEach(tag => {
+        if(tag.isOpen) {
+          flag = true;
+          tag.isOpen = false;
+        }
+      });
+      console.log(flag);
+      return flag;
     }
   }
 }
@@ -154,6 +208,7 @@ export default {
     }
 
     & {
+      display: inline-block;
       background-color: magenta;
     }
 
@@ -165,6 +220,28 @@ export default {
     &--current {
       min-width: 100px;
       display: inline-block;
+    }
+
+    &-item {
+      display: flex;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+
+    &-func {
+      position: relative;
+
+      &-list {
+        display: none;
+        position: absolute;
+        top: 1.2em;
+        width: 4em;
+        background-color: #ffffff;
+
+        &.is-open {
+          display: block;
+        }
+      }
     }
   }
 
