@@ -17,7 +17,10 @@
       </div>
       <div class="tag-popup" v-show="isPopup">
         <ul class="tag-list">
-          <li class="tag-item" v-for="item in filteredTags" :key="item.id" @click="handleAddCurrentTagItem(item, $event)">
+          <li class="tag-item" :class="{ 'is-active': item.isActive }" v-for="item in filteredTags" :key="item.id"
+            @click="handleAddCurrentTagItem(item, $event)"
+            @mouseenter="handleEnterMouse(item)"
+            @mouseleave="handleLeaveMouse(item)">
             <span class="tag-name">{{item.tagname}}</span>
             <div class="tag-func">
               <button class="tag-func-opener" @click="handleSwitchTagFunc(item, $event)">...</button>
@@ -45,7 +48,11 @@ export default {
     await this.$axios.get(`/api/tags?domain=${domain}`)
       .then(res => {
         // this.articles = res.data;
-        this.tags = res.data.map(x => {x.isOpen = false; return x; });
+        this.tags = res.data.map(x => {
+          x.isOpen = false;
+          x.isActive = false;
+          return x;
+        });
         this.filteredTags = this.tags;
       })
       .catch(err => console.log(err));
@@ -80,6 +87,7 @@ export default {
               tagname: inputValue,
               domain: 'jakel.ee',
               isOpen: false,
+              isActive: false,
             };
 
             this.handleAddTagItem(item, (newTag) => {
@@ -127,6 +135,12 @@ export default {
       this.currentTags.push(tag);
       this.$refs.tagInput.focus();
     },
+    handleEnterMouse(tag) {
+      tag.isActive = true;
+    },
+    handleLeaveMouse(tag) {
+      tag.isActive = false;
+    },
     async handleAddTagItem(tag, callback) {
 
       if(this.filteredTags.some(item => item.tagname === tag.tagname)) {
@@ -139,6 +153,7 @@ export default {
       .then(res => {
         const newTag = res.data;
         newTag.isOpen = false;
+        newTag.isActive = false;
 
         this.tags.push(newTag);
         callback && callback(newTag);
@@ -206,7 +221,7 @@ export default {
       position: absolute;
       // top: 200px;
       // left: 200px;
-      background-color: aliceblue;
+      // background-color: aliceblue;
     }
 
     &-input {
@@ -235,12 +250,21 @@ export default {
       cursor: pointer;
 
       &:hover {
-        background-color: blue;
+        background-color: aliceblue;
+      }
+
+      &.is-active {
+        background-color: aliceblue;
       }
     }
 
     &-func {
+      display: none;
       position: relative;
+
+      .is-active & {
+        display: block;
+      }
 
       &-list {
         display: none;
