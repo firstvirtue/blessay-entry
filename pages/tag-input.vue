@@ -271,21 +271,24 @@ export default {
   }
   .tag {
     &-container {
-      // TEMP
       position: absolute;
-      // top: 200px;
-      // left: 200px;
-      // background-color: aliceblue;
+      border: 1px solid black;
+      padding: 0.5em 1em;
     }
 
     &-input {
       min-height: 1em;
       min-width: 20rem;
+      padding: 1em 0;
+
+      input {
+        border: 0;
+      }
     }
 
     & {
       display: inline-block;
-      background-color: magenta;
+      outline: none;
     }
 
     .close-btn {
