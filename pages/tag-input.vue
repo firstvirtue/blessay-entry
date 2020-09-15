@@ -17,14 +17,14 @@
       </div>
       <div class="tag-popup" v-show="isPopup">
         <ul class="tag-list">
-          <li class="tag-item" :class="{ 'is-active': item.isActive }" v-for="item in filteredTags" :key="item.id"
-            @click="handleAddCurrentTagItem(item, $event)"
+          <li class="tag-item" :class="{ 'is-active': item.isActive, 'is-new': item.isNew }" v-for="item in filteredTags" :key="item.id"
+            @click="handleAddTagLocal(item, $event)"
             @mouseenter="handleEnterMouse(item)"
             @mouseleave="handleLeaveMouse(item)">
             <span class="tag-name">{{item.tagname}}</span>
             <div class="tag-func">
               <button class="tag-func-opener" @click="handleSwitchTagFunc(item, $event)">...</button>
-              <div class="preventer" :class="{'is-open': item.isOpen}" role="presentation"></div>
+              <div class="preventer" :class="{'is-open': item.isOpen}" @click="handleHideTagFunc(item, $event)" role="presentation"></div>
               <ul class="tag-func-list" :class="{'is-open': item.isOpen}">
                 <li><button class="tag-func-trigger" @click="handleRemoveStoredTag(item, $event)">삭제</button></li>
               </ul>
@@ -103,9 +103,9 @@ export default {
           };
 
           if(item.tagname.length) {
-            this.handleAddTagItem(item, (newTag) => {
+            this.handleAddTagAPI(item, (newTag) => {
               this.$refs.tagInput.value = '';
-              this.handleAddCurrentTagItem(newTag);
+              this.handleAddTagLocal(newTag);
             });
           }
 
@@ -149,7 +149,6 @@ export default {
         this.prevFilter = filter;
         const filtered = this.tags.filter(x => x.tagname.match(filter));
         this.filteredTags = filtered;
-        // console.log('1', filtered);
 
         if(filter.length > 0 && !this.filteredTags.find(x => x.tagname === filter)) {
           const newTag = {
@@ -161,7 +160,6 @@ export default {
           };
 
           this.filteredTags.push(newTag);
-          // console.log('2', this.filteredTags);
         }
       }
     },
@@ -177,9 +175,9 @@ export default {
       this.$refs.tagInput.value = '';
       this.filteredTags = this.tags;
     },
-    handleAddCurrentTagItem(tag, event) {
+    handleAddTagLocal(tag, event) {
       event && event.stopPropagation();
-      if(this.handleCheckAndHideTagFunc()) return;
+      // if(this.handleCheckAndHideTagFunc()) return;
       if(this.currentTags.some(item => item.tagname === tag.tagname)) return;
 
       this.currentTags.push(tag);
@@ -193,9 +191,9 @@ export default {
       //
       //
     },
-    async handleAddTagItem(tag, callback) {
+    async handleAddTagAPI(tag, callback) {
 
-      if(tag.isNew) {
+      if(tag.isNew && !this.tags.find(x => x.tagname === tag.tagname)) {
         // [TODO] update API
         await this.$axios.post(`/api/tags`, tag)
         .then(res => {
@@ -243,9 +241,13 @@ export default {
     },
     handleSwitchTagFunc(tag, event) {
       event.stopPropagation();
-      this.handleCheckAndHideTagFunc();
-      tag.isOpen = !tag.isOpen;
+      tag.isOpen = true;
     },
+    handleHideTagFunc(tag, event) {
+      event.stopPropagation();
+      tag.isOpen = false;
+    },
+    // [TODO] rename handleHideTagFunc, remove flag
     handleCheckAndHideTagFunc() {
       let flag;
       this.filteredTags.forEach(tag => {
@@ -299,7 +301,9 @@ export default {
     &-item {
       display: flex;
       justify-content: space-between;
+      position: relative;
       cursor: pointer;
+      padding: 0.3em;
 
       &:hover {
         background-color: aliceblue;
@@ -307,6 +311,19 @@ export default {
 
       &.is-active {
         background-color: aliceblue;
+      }
+
+      &.is-new {
+        padding-left: 70px;
+        &::before {
+          content: '새로만들기';
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          left: 0;
+          font-size: 13px;
+          color: #999999;
+        }
       }
     }
 
