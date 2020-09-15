@@ -59,6 +59,7 @@ export default {
   data() {
     return {
       activeTag: null,
+      prevFilter: null,
       isModal: false,
       isPopup: false,
       currentTags: [],
@@ -71,7 +72,7 @@ export default {
       this.filteredTags.forEach(x => x.isActive = false);
       if(this.activeTag) this.activeTag.isActive = true;
 
-      console.log(this.activeTag);
+      // console.log(this.activeTag ? this.activeTag.tagname : 'null');
     },
     isPopup: function() {
       this.activeTag = null;
@@ -91,6 +92,8 @@ export default {
           e.preventDefault();
           const inputValue = e.target.value;
 
+          console.log(this.activeTag);
+
           let item = this.activeTag ?? {
             tagname: inputValue,
             domain: 'jakel.ee',
@@ -99,10 +102,12 @@ export default {
             isNew: true,
           };
 
-          this.handleAddTagItem(item, (newTag) => {
-            this.$refs.tagInput.value = '';
-            this.handleAddCurrentTagItem(newTag);
-          });
+          if(item.tagname.length) {
+            this.handleAddTagItem(item, (newTag) => {
+              this.$refs.tagInput.value = '';
+              this.handleAddCurrentTagItem(newTag);
+            });
+          }
 
           break;
         case 8:
@@ -137,22 +142,26 @@ export default {
       }
     },
     handleKeyUpTagInput(e) {
-
       if(e.keyCode !== 38 && e.keyCode !== 40) {
         const filter = e.target.value;
+        if(filter === this.prevFilter) return;
+
+        this.prevFilter = filter;
         const filtered = this.tags.filter(x => x.tagname.match(filter));
         this.filteredTags = filtered;
+        // console.log('1', filtered);
 
-        if(filter.length > 0 && this.filteredTags.filter(x => x.tagname.match(filter)).length === 0) {
+        if(filter.length > 0 && !this.filteredTags.find(x => x.tagname === filter)) {
           const newTag = {
             tagname: filter,
             domain: 'jakel.ee',
             isOpen: false,
             isActive: false,
             isNew: true,
-          }
+          };
 
           this.filteredTags.push(newTag);
+          // console.log('2', this.filteredTags);
         }
       }
     },
@@ -178,6 +187,7 @@ export default {
     },
     handleEnterMouse(tag) {
       this.activeTag = tag;
+      console.log(tag);
     },
     handleLeaveMouse(tag) {
       //
