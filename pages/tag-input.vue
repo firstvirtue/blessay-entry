@@ -116,7 +116,7 @@ export default {
               this.currentTags.pop();
             }
           }
-
+          this.activeTag = null;
           break;
         case 38:
           e.preventDefault();
