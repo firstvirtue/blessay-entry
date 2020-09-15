@@ -5,10 +5,10 @@
       <div class="tag-input" @click="handleClickTagContainer">
         <div v-for="item in currentTags" :key="item.id" class="tag">
           {{item.tagname}}
-          <span class="close-btn" @click="handleRemoveTag(item)">x</span>
+          <span class="close-btn" @click="handleRemoveTag(item)">+</span>
         </div>
 
-        <input class="tag tag--current" ref="tagInput" autocomplete="off"
+        <input class="tag tag--holder" ref="tagInput" autocomplete="off"
           @focus="handleFocusTagInput"
           @click="handleClickTagInput"
           @blur="handleBlurTagInput"
@@ -26,7 +26,7 @@
               <button class="tag-func-opener" @click="handleSwitchTagFunc(item, $event)">...</button>
               <div class="preventer" :class="{'is-open': item.isOpen}" @click="handleHideTagFunc(item, $event)" role="presentation"></div>
               <ul class="tag-func-list" :class="{'is-open': item.isOpen}">
-                <li><button class="tag-func-trigger" @click="handleRemoveStoredTag(item, $event)">삭제</button></li>
+                <li class="tag-func-item"><button class="tag-func-trigger" @click="handleRemoveStoredTag(item, $event)">삭제</button></li>
               </ul>
             </div>
           </li>
@@ -213,7 +213,9 @@ export default {
     handleClickTagContainer(e) {
       e.stopPropagation();
       this.isPopup = true;
-      this.$refs.tagInput.focus();
+      setTimeout(() => {
+        this.$refs.tagInput.focus();
+      }, 10);
     },
     async handleRemoveStoredTag(tag, event) {
       event.stopPropagation();
@@ -233,6 +235,8 @@ export default {
           if(indexCurrent > -1) {
             this.currentTags.splice(indexCurrent, 1);
           }
+
+          this.$refs.tagInput.focus();
 
           // [TODO] Remove all others current tags
         })
@@ -272,14 +276,14 @@ export default {
   .tag {
     &-container {
       position: absolute;
-      border: 1px solid black;
-      padding: 0.5em 1em;
+      border: 1px solid #e6e6e6;
+      max-width: 400px;
     }
 
     &-input {
       min-height: 1em;
       min-width: 20rem;
-      padding: 1em 0;
+      padding: 1em;
 
       input {
         border: 0;
@@ -288,22 +292,33 @@ export default {
 
     & {
       display: inline-block;
+      color: #a69174;
+      margin: 0.4em;
       outline: none;
+
+      &--holder {
+        display: none;
+        color: #333;
+      }
     }
 
     .close-btn {
       display: none;
       cursor: pointer;
+      transform: scale(1.8) rotate(45deg);
     }
 
-    &--current {
-      min-width: 100px;
-      display: inline-block;
+    &-popup {
+      padding: 0 1em 1em;
+    }
+
+    &-list {
+      max-width: 30rem;
     }
 
     &-item {
-      display: flex;
-      justify-content: space-between;
+      // display: flex;
+      // justify-content: space-between;
       position: relative;
       cursor: pointer;
       padding: 0.3em;
@@ -332,23 +347,42 @@ export default {
 
     &-func {
       display: none;
-      position: relative;
+      position: absolute;
+      right: 0;
+      top: 0;
+      height: 100%;
+      width: 30px;
 
       .is-active & {
         display: block;
       }
 
+      &-opener {
+        // display: flex;
+        // align-items: center;
+        // justify-content: center;
+        height: 100%;
+        width: 100%;
+        text-align: center;
+        letter-spacing: 0.2em;
+      }
+
       &-list {
         display: none;
         position: absolute;
-        top: 1.2em;
-        width: 4em;
+        top: 2em;
+        min-width: 2em;
         background-color: #ffffff;
+        box-shadow: 2px 2px 10px 5px #f0f0f0;
         z-index: 101;
 
         &.is-open {
           display: block;
         }
+      }
+
+      &-item {
+        padding: 0.2em;
       }
 
       .preventer {
@@ -370,6 +404,10 @@ export default {
   .is-popup {
     .tag {
       .close-btn {
+        display: inline-block;
+      }
+
+      &--holder {
         display: inline-block;
       }
     }
