@@ -144,23 +144,27 @@ export default {
     handleKeyUpTagInput(e) {
       if(e.keyCode !== 38 && e.keyCode !== 40) {
         const filter = e.target.value;
-        if(filter === this.prevFilter) return;
 
-        this.prevFilter = filter;
-        const filtered = this.tags.filter(x => x.tagname.match(filter));
-        this.filteredTags = filtered;
+        this.updateFilteredTags(filter);
+      }
+    },
+    updateFilteredTags(filter = '') {
+      if(filter === this.prevFilter) return;
 
-        if(filter.length > 0 && !this.filteredTags.find(x => x.tagname === filter)) {
-          const newTag = {
-            tagname: filter,
-            domain: 'jakel.ee',
-            isOpen: false,
-            isActive: false,
-            isNew: true,
-          };
+      this.prevFilter = filter;
+      const filtered = this.tags.filter(x => x.tagname.match(filter));
+      this.filteredTags = filtered;
 
-          this.filteredTags.push(newTag);
-        }
+      if(filter.length > 0 && !this.filteredTags.find(x => x.tagname === filter)) {
+        const newTag = {
+          tagname: filter,
+          domain: 'jakel.ee',
+          isOpen: false,
+          isActive: false,
+          isNew: true,
+        };
+
+        this.filteredTags.push(newTag);
       }
     },
     handleFocusTagInput(e) {
@@ -204,6 +208,7 @@ export default {
           this.tags.push(newTag);
           this.activeTag = null;
           callback && callback(newTag);
+          this.updateFilteredTags();
         })
         .catch(err => console.log(err));
       } else {
