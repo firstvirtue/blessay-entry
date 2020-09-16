@@ -178,10 +178,10 @@ export default {
     handleAddTagLocal(tag, event) {
       event && event.stopPropagation();
       // if(this.handleCheckAndHideTagFunc()) return;
+      this.$refs.tagInput.focus();
       if(this.currentTags.some(item => item.tagname === tag.tagname)) return;
 
       this.currentTags.push(tag);
-      this.$refs.tagInput.focus();
     },
     handleEnterMouse(tag) {
       this.activeTag = tag;
@@ -379,7 +379,7 @@ export default {
         display: none;
         position: absolute;
         top: 2em;
-        min-width: 2.5em;
+        min-width: 3em;
         background-color: #ffffff;
         box-shadow: 1px 1px 4px 0 #f0f0f0;
         z-index: 101;
@@ -390,7 +390,7 @@ export default {
       }
 
       &-item {
-        padding: 0.2em;
+        padding: 0.5em;
       }
 
       .preventer {
