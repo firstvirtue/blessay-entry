@@ -410,6 +410,11 @@ export default {
   }
 
   .is-popup {
+    &.tag-container {
+        box-shadow: 2px 2px 6px 1px rgba(153, 153, 153, 0.2);
+        border: none;
+      }
+
     .tag {
       padding-right: 0.8em;
 
