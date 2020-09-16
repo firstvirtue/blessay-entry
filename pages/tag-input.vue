@@ -274,6 +274,9 @@ export default {
     padding-top: 20rem;
   }
   .tag {
+
+    $fontSize: 14px;
+
     &-container {
       position: absolute;
       border: 1px solid #e6e6e6;
@@ -292,20 +295,27 @@ export default {
 
     & {
       display: inline-block;
+      position: relative;
       color: #a69174;
-      margin: 0.4em;
+      margin: 0.3em;
       outline: none;
+      font-size: $fontSize;
 
       &--holder {
         display: none;
         color: #333;
+        font-size: $fontSize;
       }
     }
 
     .close-btn {
       display: none;
+      position: absolute;
+      top: 50%;
+      right: -2px;
+      font-size: 24px;
+      transform: rotate(45deg) translate(-50%, -48%);
       cursor: pointer;
-      transform: scale(1.8) rotate(45deg);
     }
 
     &-popup {
@@ -322,6 +332,7 @@ export default {
       position: relative;
       cursor: pointer;
       padding: 0.3em;
+      font-size: $fontSize;
 
       &:hover {
         background-color: aliceblue;
@@ -358,9 +369,6 @@ export default {
       }
 
       &-opener {
-        // display: flex;
-        // align-items: center;
-        // justify-content: center;
         height: 100%;
         width: 100%;
         text-align: center;
@@ -371,9 +379,9 @@ export default {
         display: none;
         position: absolute;
         top: 2em;
-        min-width: 2em;
+        min-width: 2.5em;
         background-color: #ffffff;
-        box-shadow: 2px 2px 10px 5px #f0f0f0;
+        box-shadow: 1px 1px 4px 0 #f0f0f0;
         z-index: 101;
 
         &.is-open {
@@ -403,6 +411,8 @@ export default {
 
   .is-popup {
     .tag {
+      padding-right: 0.8em;
+
       .close-btn {
         display: inline-block;
       }
