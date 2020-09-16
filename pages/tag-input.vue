@@ -2,6 +2,7 @@
   <div class="wrapper">
 
     <div class="tag-container" :class="{'is-popup': isPopup}">
+      <div class="tag-watermark" :class="{ 'is-hide': isPopup || currentTags.length > 0 }">태그를 입력해 주세요.</div>
       <div class="tag-input" @click="handleClickTagContainer">
         <div v-for="item in currentTags" :key="item.id" class="tag">
           {{item.tagname}}
@@ -289,12 +290,26 @@ export default {
     }
 
     &-input {
+      position: relative;
       min-height: 1em;
       min-width: 20rem;
       padding: 1em;
 
       input {
         border: 0;
+      }
+    }
+
+    &-watermark {
+      position: absolute;
+      top: 50%;
+      left: 1em;
+      transform: translate(0, -50%);
+      color: #999;
+      font-size: $fontSize;
+
+      &.is-hide {
+        display: none;
       }
     }
 
