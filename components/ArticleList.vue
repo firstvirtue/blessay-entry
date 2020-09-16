@@ -82,6 +82,19 @@ ul {
     align-self: center;
     word-break: keep-all;
     word-wrap: break-word;
+    animation: fadein 0.5s;
+  }
+
+  @keyframes fadein {
+    0% {
+      transform: scale(1.2);
+      opacity: 0;
+    }
+
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
   }
 }
 
