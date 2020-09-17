@@ -19,7 +19,7 @@
       <div class="tag-popup" v-show="isPopup">
         <ul class="tag-list">
           <li class="tag-item" :class="{ 'is-active': item.isActive, 'is-new': item.isNew }" v-for="item in filteredTags" :key="item.id"
-            @click="handleAddTagLocal(item, $event)"
+            @click="addNewTag(item, $event)"
             @mouseenter="handleEnterMouse(item)"
             @mouseleave="handleLeaveMouse(item)">
             <span class="tag-name">{{item.tagname}}</span>
@@ -77,6 +77,8 @@ export default {
     },
     isPopup: function() {
       this.activeTag = null;
+      this.$refs.tagInput.value = '';
+      this.filteredTags = this.tags;
     }
   },
   methods: {
@@ -93,8 +95,6 @@ export default {
           e.preventDefault();
           const inputValue = e.target.value;
 
-          console.log(this.activeTag);
-
           let item = this.activeTag ?? {
             tagname: inputValue,
             domain: 'jakel.ee',
@@ -103,12 +103,7 @@ export default {
             isNew: true,
           };
 
-          if(item.tagname.length) {
-            this.handleAddTagAPI(item, (newTag) => {
-              this.$refs.tagInput.value = '';
-              this.handleAddTagLocal(newTag);
-            });
-          }
+          this.addNewTag(item);
 
           break;
         case 8:
@@ -168,38 +163,21 @@ export default {
         this.filteredTags.push(newTag);
       }
     },
-    handleFocusTagInput(e) {
-      // console.log(e);
-      this.isPopup = true;
-      this.handleCheckAndHideTagFunc();
-    },
-    handleClickTagInput(e) {
-      e.stopPropagation();
-    },
-    handleBlurTagInput() {
-      this.$refs.tagInput.value = '';
-      this.filteredTags = this.tags;
-    },
-    handleAddTagLocal(tag, event) {
-      event && event.stopPropagation();
-      // if(this.handleCheckAndHideTagFunc()) return;
-      this.$refs.tagInput.focus();
-      if(this.currentTags.some(item => item.tagname === tag.tagname)) return;
+    addNewTag(item, event) {
 
-      this.currentTags.push(tag);
-    },
-    handleEnterMouse(tag) {
-      this.activeTag = tag;
-      console.log(tag);
-    },
-    handleLeaveMouse(tag) {
-      //
-      //
+      event && event.stopPropagation();
+      console.log(item);
+
+      if(item.tagname.length) {
+        this.handleAddTagAPI(item, (newTag) => {
+          this.handleAddTagLocal(newTag);
+        });
+      }
     },
     async handleAddTagAPI(tag, callback) {
 
       if(tag.isNew && !this.tags.find(x => x.tagname === tag.tagname)) {
-        // [TODO] update API
+
         await this.$axios.post(`/api/tags`, tag)
         .then(res => {
           const newTag = res.data;
@@ -216,12 +194,15 @@ export default {
         callback && callback(tag);
       }
     },
-    handleClickTagContainer(e) {
-      e.stopPropagation();
-      this.isPopup = true;
-      setTimeout(() => {
-        this.$refs.tagInput.focus();
-      }, 10);
+    handleAddTagLocal(tag, event) {
+      event && event.stopPropagation();
+      // if(this.handleCheckAndHideTagFunc()) return;
+      this.$refs.tagInput.value = '';
+      // this.handleAddTagLocal(newTag);
+      this.$refs.tagInput.focus();
+      if(this.currentTags.some(item => item.tagname === tag.tagname)) return;
+
+      this.currentTags.push(tag);
     },
     async handleRemoveStoredTag(tag, event) {
       event.stopPropagation();
@@ -242,12 +223,44 @@ export default {
             this.currentTags.splice(indexCurrent, 1);
           }
 
+          const indexTag = this.tags.indexOf(tag);
+          if(indexTag > -1) {
+            this.tags.splice(indexTag, 1);
+          }
+
           this.$refs.tagInput.focus();
 
           // [TODO] Remove all others current tags
         })
         .catch(err => console.log(err));
       }
+    },
+    handleFocusTagInput(e) {
+      // console.log(e);
+      this.isPopup = true;
+      this.handleCheckAndHideTagFunc();
+    },
+    handleClickTagInput(e) {
+      e.stopPropagation();
+    },
+    handleBlurTagInput() {
+      // this.$refs.tagInput.value = '';
+      // this.filteredTags = this.tags;
+    },
+    handleEnterMouse(tag) {
+      this.activeTag = tag;
+      // console.log(tag);
+    },
+    handleLeaveMouse(tag) {
+      //
+      //
+    },
+    handleClickTagContainer(e) {
+      e.stopPropagation();
+      this.isPopup = true;
+      setTimeout(() => {
+        this.$refs.tagInput.focus();
+      }, 10);
     },
     handleSwitchTagFunc(tag, event) {
       event.stopPropagation();
