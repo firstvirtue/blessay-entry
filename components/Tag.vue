@@ -198,6 +198,7 @@ export default {
       this.$refs.tagInput.focus();
       if(this.currentTags.some(item => item.tagname === tag.tagname)) return;
 
+      tag.tag_id = tag.id;
       this.currentTags.push(tag);
     },
     async handleRemoveStoredTag(tag, event) {
@@ -214,14 +215,15 @@ export default {
             this.filteredTags.splice(index, 1);
           }
 
-          const indexCurrent = this.currentTags.indexOf(tag);
-          if(indexCurrent > -1) {
-            this.currentTags.splice(indexCurrent, 1);
-          }
-
           const indexTag = this.tags.indexOf(tag);
           if(indexTag > -1) {
             this.tags.splice(indexTag, 1);
+          }
+
+          const curObj = this.currentTags.find(x => x.tag_id === tag.id);
+          if(curObj) {
+            const indexCurrent = this.currentTags.indexOf(curObj);
+            this.currentTags.splice(indexCurrent, 1);
           }
 
           this.$refs.tagInput.focus();
